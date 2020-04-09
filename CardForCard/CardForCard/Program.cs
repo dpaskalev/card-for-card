@@ -6,7 +6,8 @@ namespace CardForCard
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            Engine game = new Engine();
+            game.GameLoop();
         }
     }
 }

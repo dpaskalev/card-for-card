@@ -32,9 +32,9 @@ namespace CardForCard
                 FillCards(deck, ground, index);
             }
 
-            while (deck.Count > 0)
+            index = 3;
+            do
             {
-                index = 3;
                 if (player.Count == 0 || bot.Count == 0)
                 {
                     for (int i = 0; i < index; i++)
@@ -44,66 +44,110 @@ namespace CardForCard
                     }
                 }
                 PlayRound();
-            }
-            while (player.Count > 0 && bot.Count > 0)
-            {
-                PlayRound();
-            }
+            } while (deck.Count > 0);
+
             PrintEndGameMessage();
         }
-        private void PlayRound()
+
+        private void PrintRundInfo()
         {
             Console.Clear();
             PrintCards(ground);
             Console.WriteLine();
             PrintCards(player);
             PrintMessage("");
-            string card;
+        }
+
+        private bool GetBoolContain(List<Card>deck,string card)
+        {
+            bool contains = false;
+            foreach (var item in deck)
+            {
+                if (item.Type == card.ToUpper())
+                {
+                    contains = true;
+                    break;
+                }
+            }
+            return contains;
+        }
+
+        private int GetIndexOf(List<Card> deck, string card)
+        {
+            int index = -1;
+            for (int i = 0; i < deck.Count; i++)
+            {
+                if (deck[i].Type == card.ToUpper())
+                {
+                    index = i;
+                    break;
+                }
+            }
+            return index;
+        }
+
+        private void PrintPlayreTurn()
+        {
             bool haveError = true;
+
             while (haveError)
             {
-                card = Console.ReadLine();
-                foreach (var item in player)
+                string card = Console.ReadLine();
+                
+                if (GetBoolContain(player,card))
                 {
-                    if (card.ToUpper() == item.Type)
+                    if (GetBoolContain(ground,card))
                     {
-                        player.Remove(item);
-                        PlayTurn(player, ground, card);
-                        haveError = false;
-                        break;
+                        ground.RemoveAt(GetIndexOf(ground,card));
+                        playerPoints += 2;
                     }
+                    else
+                    {
+                        ground.Add(new Card(card.ToUpper(),CardColor.Clubs));
+                    }
+                    player.RemoveAt(GetIndexOf(player, card));
+                    haveError = false;
                 }
                 if (haveError)
                 {
                     PrintMessage("You don't have this card!");
                 }
             }
+        }
 
-            haveError = true;
-            foreach (var item in ground)
+        private void PrintBotTurn()
+        {
+            bool haveError = true;
+
+            for (int i = 0; i < bot.Count; i++)
             {
-                foreach (var pice in bot)
+                if (GetBoolContain(ground,bot[i].Type))
                 {
-                    if (item.Type == pice.Type)
-                    {
-                        card = pice.Type;
-                        bot.Remove(pice);
-                        ground.Remove(item);
-                        botPoints += 2;
-                        haveError = false;
-                        break;
-                    }
-                }
-                if (haveError == false)
-                {
+                    ground.RemoveAt(GetIndexOf(ground, bot[i].Type));
+                    bot.RemoveAt(GetIndexOf(bot, bot[i].Type));
+                    botPoints += 2;
+                    haveError = false;
                     break;
                 }
             }
+
             if (haveError)
             {
                 int random = GetRandomNum(0, bot.Count);
                 ground.Add(bot[random]);
                 bot.RemoveAt(random);
+            }
+        }
+
+        private void PlayRound()
+        {
+            while (player.Count > 0)
+            {
+                PrintRundInfo();
+
+                PrintPlayreTurn();
+
+                PrintBotTurn();
             }
         }
 
@@ -139,24 +183,24 @@ namespace CardForCard
             Console.WriteLine();
         }
 
-        private void PlayTurn(List<Card> gamer,List<Card>ground, string card)
-        {
-            bool haveCard = false;
-            foreach (var item in ground)
-            {
-                if (card.ToUpper() == item.Type)
-                {
-                    ground.Remove(item);
-                    playerPoints += 2;
-                    haveCard = true;
-                    break;
-                }
-            }
-            if (haveCard == false)
-            {
-                ground.Add(new Card(card.ToUpper(),CardColor.Clubs));
-            }
-        }
+        //private void PlayTurn(List<Card> gamer,List<Card>ground, string card)
+        //{
+        //    bool haveCard = false;
+        //    foreach (var item in ground)
+        //    {
+        //        if (card.ToUpper() == item.Type)
+        //        {
+        //            ground.Remove(item);
+        //            playerPoints += 2;
+        //            haveCard = true;
+        //            break;
+        //        }
+        //    }
+        //    if (haveCard == false)
+        //    {
+        //        ground.Add(new Card(card.ToUpper(),CardColor.Clubs));
+        //    }
+        //}
 
         private void FillCards(List<Card> masterDeck, List<Card> takerDeck,int index)
         {
@@ -194,9 +238,9 @@ namespace CardForCard
             foreach (var type in cardTypes)
             {
                 cardDeck.Add(new Card(type, CardColor.Clubs));
-                cardDeck.Add(new Card(type, CardColor.Diamonds));
-                cardDeck.Add(new Card(type, CardColor.Hearts));
-                cardDeck.Add(new Card(type, CardColor.Spades));
+                cardDeck.Add(new Card(type, CardColor.Clubs));
+                cardDeck.Add(new Card(type, CardColor.Clubs));
+                cardDeck.Add(new Card(type, CardColor.Clubs));
             }
 
             return cardDeck;
