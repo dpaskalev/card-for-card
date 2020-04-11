@@ -10,6 +10,15 @@
             Type = type;
             Color = color;
         }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null || !this.Type.Equals(obj.GetType()))
+                return false;
+
+            Card otherCard = (Card) obj;
+            return Type == otherCard.Type;
+        }
     }
 
     public enum CardColor
