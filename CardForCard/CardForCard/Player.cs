@@ -1,29 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-
+using System.Text;
 
 namespace CardForCard
 {
-    public class Player
+    public class Player : IColection
     {
-        public IList<Card> Cards { get; } = new List<Card>();
         public int Points { get; private set; } = 0;
         public string Name { get; private set; }
-        private string card;
 
         public Player(string name)
         {
             Name = name;
-        }
-
-        public void AddPoints(int points)
-        {
-            Points += points;
-        }
-
-        public void AddToCards(Card card)
-        {
-            Cards.Add(card);
         }
 
         public void AddToCards(IList<Card> cards)
@@ -34,80 +22,62 @@ namespace CardForCard
             }
         }
 
-        public int GetIndexOf(string cardType)
+        public void AddPoints(int points)
         {
-            int result = -1;
-            for (int i = 0; i < Cards.Count; i++)
-            {
-                if (Cards[i].Type == cardType.ToUpper())
-                {
-                    result = i;
-                }
-            }
-            return result;
+            Points += points;
         }
 
-        public bool GetIfContainsCardType(string cardType)
+        public void PlayRound(Deck ground)
         {
-            bool result = false;
-            foreach (Card card in Cards)
-            {
-                if (card.Type == cardType.ToUpper())
-                {
-                    result = true;
-                }
-            }
-            return result;
-        }
+            Console.Clear();
 
-        public void RemoveCardAt(int index)
-        {
-            Cards.RemoveAt(index);
-        }
+            Utilites.PrintCards(ground);
+            Utilites.PrintCards(this);
 
-        public void PlayRound(Player ground)
-        {
+            Card card;
             while (true)
             {
-                card = Console.ReadLine();
-                if (GetIfContainsCardType(card))
+                card = new Card(Console.ReadLine().ToUpper());
+                if (GetContains(card))
                 {
-                    Cards.RemoveAt(GetIndexOf(card));
-                    Points += 2;
-                    if (ground.GetIfContainsCardType(card))
-                    {
-                        ground.RemoveCardAt(GetIndexOf(card));
-                    }
-                    else
-                    {
-                        ground.AddToCards(Cards[GetIndexOf(card)]);
-                    }
+                    RemoveCardAt(GetIndexOf(card, this));
                     break;
                 }
                 else
                 {
-                    Utilities.PrintMessage("You don't have this card!");
+                    Utilites.PrintMessage("You don't have this card!");
                 }
             }
+
+            if (ground.GetContains(card))
+            {
+                ground.RemoveCardAt(GetIndexOf(card, ground));
+                AddPoints(2);
+            }
+            else
+            {
+                ground.AddToCards(card);
+            }
+
+            Console.WriteLine();
         }
 
-        public void PlayAuthomaticRound(Player ground)
+        public void PlayRound(Deck ground, Player bot)
         {
-            foreach (Card card in Cards)
+            for (int i = 0; i < bot.Cards.Count; i++)
             {
-                if (ground.GetIfContainsCardType(card.Type))
+                if (ground.GetContains(bot.Cards[i]))
                 {
-                    ground.RemoveCardAt(GetIndexOf(card.Type));
-                    Cards.Remove(card);
-                    Points += 2;
-                    break;
-                }
-                else
-                {
-                    Cards.Remove(card);
-                    ground.AddToCards(card);
+                    ground.RemoveCardAt(GetIndexOf(bot.Cards[i], ground));
+                    bot.RemoveCardAt(i);
+                    bot.AddPoints(2);
+                    return;
                 }
             }
+            int random = Utilites.GetRandomNum(0, bot.Cards.Count);
+            ground.AddToCards(bot.Cards[random]);
+            bot.RemoveCardAt(random);
         }
+
     }
 }

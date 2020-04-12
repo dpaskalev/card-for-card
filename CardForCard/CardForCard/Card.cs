@@ -1,4 +1,6 @@
-﻿namespace CardForCard
+﻿using System;
+
+namespace CardForCard
 {
     public class Card
     {
@@ -16,11 +18,15 @@
             if (obj == null || !this.Type.Equals(obj.GetType()))
                 return false;
 
-            Card otherCard = (Card) obj;
+            Card otherCard = (Card)obj;
             return Type == otherCard.Type;
         }
-    }
 
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Type, Color);
+        }
+    }
     public enum CardColor
     {
         Clubs,

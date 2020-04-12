@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace CardForCard
 {
-    public static class Utilities
+    public static class Utilites
     {
         public static int GetRandomNum(int bottom, int top)
         {
@@ -17,18 +15,34 @@ namespace CardForCard
             Console.WriteLine(message);
         }
 
-        public static void PrintPoints(string name, int points)
+        public static void PrintPoints(Player colection)
         {
-            Console.WriteLine($"{name} points: {points}");
+            Console.WriteLine($"{colection.Name} points: {colection.Points}");
         }
-        
-        public static void PrintCards(Player player)
+
+        public static void PrintCards(IColection player)
         {
             foreach (var card in player.Cards)
             {
                 Console.Write($"{card.Type} ");
             }
             Console.WriteLine();
+        }
+
+        public static void DetermenWinner(Player player, Player bot)
+        {
+            if (player.Points > bot.Points)
+            {
+                PrintMessage("You win!");
+            }
+            else if (player.Points < bot.Points)
+            {
+                PrintMessage("You lose!");
+            }
+            else
+            {
+                PrintMessage("No winner!");
+            }
         }
     }
 }

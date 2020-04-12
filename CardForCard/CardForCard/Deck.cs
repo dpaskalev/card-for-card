@@ -1,18 +1,17 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace CardForCard
 {
-    public class Deck
+    public class Deck : IColection
     {
-        public IList<Card> Cards { get; private set; } = new List<Card>();
-
         public Deck()
         {
-            GenerateCards();
-            ShuffleDeck();
+
         }
 
-        public void FillCards(Player playerDeck, int count)
+        public void FillCards(IColection playerDeck, int count)
         {
             for (int i = 0; i < count; i++)
             {
@@ -24,27 +23,27 @@ namespace CardForCard
             }
         }
 
-        private void GenerateCards()
+        public void GenerateCards()
         {
             var cardTypes = new string[]
                 { "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A" };
 
             foreach (var type in cardTypes)
             {
-                Cards.Add(new Card(type, CardColor.Clubs));
-                Cards.Add(new Card(type, CardColor.Diamonds));
-                Cards.Add(new Card(type, CardColor.Hearts));
-                Cards.Add(new Card(type, CardColor.Spades));
+                Cards.Add(new Card(type));
+                Cards.Add(new Card(type));
+                Cards.Add(new Card(type));
+                Cards.Add(new Card(type));
             }
         }
 
-        private void ShuffleDeck()
+        public void ShuffleDeck()
         {
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < Cards.Count; i++)
             {
                 SwapCards(
-                    Utilities.GetRandomNum(0, Cards.Count),
-                    Utilities.GetRandomNum(0, Cards.Count));
+                    Utilites.GetRandomNum(0, Cards.Count),
+                    Utilites.GetRandomNum(0, Cards.Count));
             }
         }
 
